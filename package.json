@@ -1,7 +1,8 @@
 {
 	"scripts": {
 		"dev": "parcel index.html --port 8000",
-		"build": "parcel build index.html"
+		"buildidx": "parcel build index.html",
+		"buildgrph": "parcel build viewer.html"
 	},
 	"dependencies": {
 		"chart.js": "^4.4.1",
