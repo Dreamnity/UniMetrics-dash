@@ -39,7 +39,7 @@
 			<h1 id="loading">Fetching...</h1>
 			<canvas id="myChart"></canvas>
 		</div>
-		<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+		<script src="node_modules/chart.js/dist/chart.umd.js"></script>
 
 		<script async>
 			const params = new URL(
@@ -71,15 +71,14 @@
             loading.hidden = false;
             loading.textContent = "Connecting...";
             ctx.hidden = true;
-            try {
 						(ws = new WebSocket(wslink + "?" + params.toString()));
-            } catch {
-              setTimeout(reco,2000);
-            }
           }
 					reco();
-					ws.onclose = reco;
-          ws.onerror = ()=>setTimeout(reco,2000);
+					//ws.onclose = reco;
+          //ws.onerror = ()=>setTimeout(reco,2000);
+          setInterval(()=>{
+            if(ws.readyState === ws.CLOSED) reco();
+          },2000)
 					ws.onopen = async () => {
             ctx.hidden = false;
 						loading.hidden = true;

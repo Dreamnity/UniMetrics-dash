@@ -1,5 +1,9 @@
 {
+	"scripts": {
+		"dev": "parcel index.html --port 8000"
+	},
 	"dependencies": {
+		"chart.js": "^4.4.1",
 		"gridstack": "^10.0.1"
 	},
 	"devDependencies": {
