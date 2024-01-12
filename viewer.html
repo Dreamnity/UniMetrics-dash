@@ -1,0 +1,133 @@
+<html>
+	<head>
+		<title>UniMetrics graph</title>
+		<style>
+			#loading {
+				animation: blinkerBlue 1.5s infinite;
+				font-size: 20px;
+				text-align: center;
+				padding: 50px 0 50px;
+			}
+			#error {
+				color: red;
+				font-size: 20px;
+				text-align: center;
+				padding: 50px 0 50px;
+			}
+			body {
+				margin: auto;
+				width: 640px;
+				padding: 50px;
+				font-family: "Lexend Deca", sans-serif;
+				color: #2e475d;
+			}
+			@keyframes blinkerBlue {
+				0% {
+					color: black;
+				}
+				50% {
+					color: rgb(0, 160, 213);
+				}
+				100% {
+					color: black;
+				}
+			}
+		</style>
+	</head>
+	<body>
+		<div>
+			<h1 id="loading">Fetching...</h1>
+			<canvas id="myChart"></canvas>
+		</div>
+		<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+		<script async>
+			const params = new URL(
+				location.href,
+				"https://unimetrics.dreamnity.in/viewer"
+			).searchParams;
+			console.log(params.toString());
+			const api = "https://um-api.dreamnity.in";
+			const wslink = "wss://um-api.dreamnity.in";
+			const ctx = document.getElementById("myChart");
+			//const token = "MWhqcmIzMnVsLmQ0Zw";
+			fetch(api + "/variable/get?" + params.toString())
+				.catch(e => ({ text: () => "Error: " + e.message, status: 500 }))
+				.then(async e => {
+					if (e.status !== 200) return { error: true, err: await e.text() };
+					return { error: false, data: await e.text() };
+				})
+				.then(e => {
+					const loading = document.getElementById("loading");
+					if (e.error) {
+						loading.textContent = e.err;
+						return (loading.id = "error");
+					}
+          /**
+           * @type {WebSocket}
+           */
+					var ws;
+					const reco = () => {
+            loading.hidden = false;
+            loading.textContent = "Connecting...";
+            ctx.hidden = true;
+            try {
+						(ws = new WebSocket(wslink + "?" + params.toString()));
+            } catch {
+              setTimeout(reco,2000);
+            }
+          }
+					reco();
+					ws.onclose = reco;
+          ws.onerror = ()=>setTimeout(reco,2000);
+					ws.onopen = async () => {
+            ctx.hidden = false;
+						loading.hidden = true;
+						console.log(e);
+						const dat = e.data.split(",");
+						const chart = new Chart(ctx, {
+							type: "line",
+							data: {
+								labels: "".padEnd(dat.length, " ").split(""),
+								datasets: [
+									{
+										label: params.get("name"),
+										data: dat,
+										borderWidth: 1,
+									},
+								],
+							},
+							options: {
+								scales: {
+									y: {
+										beginAtZero: false,
+									},
+								},
+							},
+						});
+            ws.onmessage = event => {
+							if (!chart?.data?.labels) return;
+							if(chart.data.labels<=31) chart.data.labels.push(" ");
+							chart.data.datasets.forEach(dataset => {
+                if(dataset.data.length>30) dataset.data.shift();
+								dataset.data.push(event.data);
+							});
+							chart.update('active');
+						};
+					  ws.onclose = ()=>{
+              chart.destroy();
+              reco();
+            }
+					};
+				});
+			/*document.addEventListener('DOMContentLoaded',()=>{
+          function resize() {
+            document.body.style.height = document.body.scrollHeight;
+            document.body.style.width = document.body.scrollWidth;
+            console.log(document.body.style.width,document.body.scrollWidth);
+          }
+          window.addEventListener('resize',resize);
+        })*/
+		</script>
+	</body>
+</html>

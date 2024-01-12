@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<script src="node_modules/gridstack/dist/gridstack-all.js"></script>
+		<link
+			href="node_modules/gridstack/dist/gridstack.min.css"
+			rel="stylesheet"
+		/>
+		<style type="text/css">
+			.grid-stack {
+				background: #fafad2;
+			}
+			.grid-stack-item-content {
+				background-color: #18bc9c;
+			}
+		</style>
+		<meta charset="UTF-8" />
+		<title>UniMetrics</title>
+	</head>
+	<body>
+		hi
+		<div class="grid-stack">
+			<div class="grid-stack-item">
+				<div class="grid-stack-item-content"><p>drag me here</p>
+					<iframe
+						id="frame"
+						src="about:blank"
+						frameborder="0"
+						scrolling="no"
+						style="width: max-content; height: max-content"
+            class="viewer"
+					></iframe>
+				</div>
+			</div>
+			<div class="grid-stack-item" gs-w="2">
+				<div class="grid-stack-item-content">Item 2 wider</div>
+			</div>
+		</div>
+		<script type="text/javascript">
+			var grid = GridStack.init();
+			grid.load(localStorage.getItem("layout") || []);
+			document.addEventListener("DOMContentLoaded", () => {
+				document.getElementsByClassName("viewer").src =
+					"viewer.html?token=MWhqcmIzMnVsLmQ0Zw&name=test";
+			});
+			grid.on("resizestop", function (event, el) {
+				console.log(event, el.clientHeight - 28);
+				document.getElementById("frame").clientHeight = el.clientHeight - 28;
+				document.getElementById("frame").clientWidth = el.clientWidth - 28;
+			});
+		</script>
+	</body>
+</html>
