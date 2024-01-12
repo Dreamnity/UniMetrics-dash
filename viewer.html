@@ -66,20 +66,31 @@
           /**
            * @type {WebSocket}
            */
-					var ws;
-					const reco = () => {
+					var ws,onopen;
+					const reco = (e) => {
             loading.hidden = false;
-            loading.textContent = "Connecting...";
+            loading.textContent = e||"Connecting...";
             ctx.hidden = true;
 						(ws = new WebSocket(wslink + "?" + params.toString()));
+            if(onopen) ws.onopen = onopen;
           }
 					reco();
 					//ws.onclose = reco;
           //ws.onerror = ()=>setTimeout(reco,2000);
           setInterval(()=>{
-            if(ws.readyState === ws.CLOSED) reco();
+            console.log(ws);
+            if(ws&&(ws.readyState === ws.CLOSED)) {
+              console.log('WS connection lost');
+              ws.onclose();
+              ws = null;
+              loading.textContent = 'Connection lost!';
+              loading.hidden = false;
+              setTimeout(()=>reco('Reconnecting...'),2000);
+            }
           },2000)
-					ws.onopen = async () => {
+          window.ws = ws;
+          window.reco = reco;
+					onopen = ws.onopen = async () => {
             ctx.hidden = false;
 						loading.hidden = true;
 						console.log(e);
@@ -113,9 +124,8 @@
 							});
 							chart.update('active');
 						};
-					  ws.onclose = ()=>{
+					  ws.onclose = e=>{
               chart.destroy();
-              reco();
             }
 					};
 				});
