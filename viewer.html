@@ -80,7 +80,7 @@
           setInterval(()=>{
             if(ws&&(ws.readyState === ws.CLOSED)) {
               console.log('WS connection lost');
-              ws.onclose();
+              if(ws?.onclose) ws.onclose();
               ws = null;
               loading.textContent = 'Connection lost!';
               loading.hidden = false;
