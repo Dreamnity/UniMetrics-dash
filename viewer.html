@@ -49,7 +49,7 @@
 			console.log(params.toString());
 			const api = "https://um-api.dreamnity.in";
 			const wslink = "wss://um-api.dreamnity.in";
-			const ctx = document.getElementById("myChart");
+			window.ctx = document.getElementById("myChart");
 			//const token = "MWhqcmIzMnVsLmQ0Zw";
 			fetch(api + "/variable/get?" + params.toString())
 				.catch(e => ({ text: () => "Error: " + e.message, status: 500 }))
