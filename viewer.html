@@ -16,7 +16,7 @@
 			}
 			body {
 				margin: auto;
-				width: 640px;
+				width: 1366px;
 				padding: 50px;
 				font-family: "Lexend Deca", sans-serif;
 				color: #2e475d;
@@ -35,8 +35,8 @@
 		</style>
 	</head>
 	<body>
-		<div>
-			<h1 id="loading">Fetching...</h1>
+		<h1 id="loading">Fetching...</h1>
+		<div style="position: relative; height: 40vh; width: 80vw">
 			<canvas id="myChart"></canvas>
 		</div>
 		<script src="node_modules/chart.js/dist/chart.umd.js"></script>
@@ -63,34 +63,34 @@
 						loading.textContent = e.err;
 						return (loading.id = "error");
 					}
-          /**
-           * @type {WebSocket}
-           */
-					var ws,onopen;
-					const reco = (e) => {
-            loading.hidden = false;
-            loading.textContent = e||"Connecting...";
-            ctx.hidden = true;
-						(ws = new WebSocket(wslink + "?" + params.toString()));
-            if(onopen) ws.onopen = onopen;
-          }
+					/**
+					 * @type {WebSocket}
+					 */
+					var ws, onopen;
+					const reco = e => {
+						loading.hidden = false;
+						loading.textContent = e || "Connecting...";
+						ctx.hidden = true;
+						ws = new WebSocket(wslink + "?" + params.toString());
+						if (onopen) ws.onopen = onopen;
+					};
 					reco();
 					//ws.onclose = reco;
-          //ws.onerror = ()=>setTimeout(reco,2000);
-          setInterval(()=>{
-            if(ws&&(ws.readyState === ws.CLOSED)) {
-              console.log('WS connection lost');
-              if(ws?.onclose) ws.onclose();
-              ws = null;
-              loading.textContent = 'Connection lost!';
-              loading.hidden = false;
-              setTimeout(()=>reco('Reconnecting...'),2000);
-            }
-          },2000)
-          window.ws = ws;
-          window.reco = reco;
+					//ws.onerror = ()=>setTimeout(reco,2000);
+					setInterval(() => {
+						if (ws && ws.readyState === ws.CLOSED) {
+							console.log("WS connection lost");
+							if (ws?.onclose) ws.onclose();
+							ws = null;
+							loading.textContent = "Connection lost!";
+							loading.hidden = false;
+							setTimeout(() => reco("Reconnecting..."), 2000);
+						}
+					}, 2000);
+					window.ws = ws;
+					window.reco = reco;
 					onopen = ws.onopen = async () => {
-            ctx.hidden = false;
+						ctx.hidden = false;
 						loading.hidden = true;
 						const dat = e.data.split(",");
 						const chart = new Chart(ctx, {
@@ -111,20 +111,35 @@
 										beginAtZero: false,
 									},
 								},
+								elements: {
+									line: {
+										tension: 0.5,
+										fill: true,
+									},
+									point: {
+										pointStyle: false,
+									},
+								},
+								interaction: {
+									intersect: false,
+								},
+                maintainAspectRatio: false
 							},
 						});
-            ws.onmessage = event => {
+						ws.onmessage = event => {
 							if (!chart?.data?.labels) return;
-							if(chart.data.labels<=31) chart.data.labels.push(" ");
+							if (chart.data.labels <= 31) chart.data.labels.push(" ");
 							chart.data.datasets.forEach(dataset => {
-                if(dataset.data.length>30) dataset.data.shift();
+								if (dataset.data.length > 30) dataset.data.shift();
 								dataset.data.push(event.data);
 							});
-							chart.update('active');
+							chart.update("active");
 						};
-					  ws.onclose = e=>{
-              chart.destroy();
-            }
+						ws.onclose = e => {
+							chart.destroy();
+						};
+            chart.canvas.parentNode.style.height = params.get('height');
+            chart.canvas.parentNode.style.width = params.get('width');
 					};
 				});
 			/*document.addEventListener('DOMContentLoaded',()=>{

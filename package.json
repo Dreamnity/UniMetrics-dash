@@ -1,6 +1,7 @@
 {
 	"scripts": {
 		"dev": "parcel index.html --port 8000",
+		"viewer": "parcel viewer.html --port 8000",
 		"buildidx": "parcel build index.html",
 		"buildgrph": "parcel build viewer.html"
 	},
@@ -9,6 +10,7 @@
 		"gridstack": "^10.0.1"
 	},
 	"devDependencies": {
-		"parcel": "^2.11.0"
+		"parcel": "^2.11.0",
+		"vite": "^5.0.11"
 	}
 }

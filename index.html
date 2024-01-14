@@ -20,14 +20,14 @@
 	<body>
 		hi
 		<div class="grid-stack">
-			<div class="grid-stack-item">
-				<div class="grid-stack-item-content"><p>drag me here</p>
+			<div class="grid-stack-item" gs-h="5" gs-w="5">
+				<div class="grid-stack-item-content">
 					<iframe
 						id="frame"
 						src="about:blank"
 						frameborder="0"
 						scrolling="no"
-						style="width: max-content; height: max-content"
+						style="width: 100%; height: 95%"
             class="viewer"
 					></iframe>
 				</div>
@@ -39,14 +39,25 @@
 		<script type="text/javascript">
 			var grid = GridStack.init();
 			grid.load(localStorage.getItem("layout") || []);
+      const token = 'MWhqcmIzMnVsLmQ0Zw';
+      function constructSrc(element) {
+        element.src = "viewer.html?"+(new URLSearchParams({token,name:'test',width:element.parentElement.clientWidth*0.8,height:element.parentElement.clientHeight*0.8}).toString());
+      }
 			document.addEventListener("DOMContentLoaded", () => {
-				document.getElementsByClassName("viewer").src =
-					"viewer.html?token=MWhqcmIzMnVsLmQ0Zw&name=test";
+				for(const element of document.getElementsByClassName("viewer")) constructSrc(element);
 			});
-			grid.on("resizestop", function (event, el) {
+			grid.on("resizestop",
+      /**
+       * @param {Event} event
+       * @param {Element} el
+       */
+      function (event, el) {
 				console.log(event, el.clientHeight - 28);
-				document.getElementById("frame").clientHeight = el.clientHeight - 28;
-				document.getElementById("frame").clientWidth = el.clientWidth - 28;
+        const frame = [...[...el.childNodes.values()].find(e=>e.className==='grid-stack-item-content').childNodes.values()].find(e=>e.className==='viewer');
+        console.log(frame);
+				frame.clientHeight = el.clientHeight - 28;
+				frame.clientWidth = el.clientWidth - 28;
+        constructSrc(frame);
 			});
 		</script>
 	</body>
