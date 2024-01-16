@@ -20,14 +20,15 @@
 				font-family: "Lexend Deca", sans-serif;
 				color: #2e475d;
 			}
-      h1 {position: absolute;
-    width: 100px;
-    height: 50px;
-    top: 50%;
-    left: 50%;
-    margin-left: -50px; /* margin is -0.5 * dimension */
-    margin-top: -25px; 
-      }
+			h1 {
+				position: absolute;
+				width: 100px;
+				height: 50px;
+				top: 50%;
+				left: 50%;
+				margin-left: -50px; /* margin is -0.5 * dimension */
+				margin-top: -25px;
+			}
 			@keyframes blinkerBlue {
 				0% {
 					color: black;
@@ -43,7 +44,7 @@
 	</head>
 	<body>
 		<div style="position: relative; height: 40vh; width: 80vw">
-		<h1 id="loading">Fetching...</h1>
+			<h1 id="loading">Fetching...</h1>
 			<canvas id="myChart"></canvas>
 		</div>
 		<script src="node_modules/chart.js/dist/chart.umd.js"></script>
@@ -66,8 +67,8 @@
 				})
 				.then(e => {
 					const loading = document.getElementById("loading");
-          document.body.style.height = params.get('height');
-          document.body.style.width = params.get('width');
+					document.body.style.height = params.get("height");
+					document.body.style.width = params.get("width");
 					if (e.error) {
 						loading.textContent = e.err;
 						return (loading.id = "error");
@@ -132,7 +133,7 @@
 								interaction: {
 									intersect: false,
 								},
-                maintainAspectRatio: false
+								maintainAspectRatio: false,
 							},
 						});
 						ws.onmessage = event => {
@@ -147,8 +148,8 @@
 						ws.onclose = e => {
 							chart.destroy();
 						};
-            chart.canvas.parentNode.style.height = params.get('height');
-            chart.canvas.parentNode.style.width = params.get('width');
+						chart.canvas.parentNode.style.height = params.get("height");
+						chart.canvas.parentNode.style.width = params.get("width");
 					};
 				});
 			/*document.addEventListener('DOMContentLoaded',()=>{

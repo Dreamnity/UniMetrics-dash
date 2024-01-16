@@ -16,11 +16,11 @@
 			iframe {
 				width: 100%;
 				height: 95%;
-        pointer-events: unset;
+				pointer-events: unset;
 			}
-      iframe:hover {
-        pointer-events: none;
-      }
+			iframe:hover {
+				pointer-events: none;
+			}
 		</style>
 		<meta charset="UTF-8" />
 		<title>UniMetrics</title>
@@ -41,7 +41,6 @@
 			</div>
 			<div class="grid-stack-item" gs-h="3" gs-w="5">
 				<div class="grid-stack-item-content">
-
 					<iframe
 						id="frame"
 						src="about:blank"
@@ -72,8 +71,8 @@
 					new URLSearchParams({
 						token,
 						name,
-						width: element.parentElement.clientWidth,// * 0.8,
-						height: element.parentElement.clientHeight// * 0.8,
+						width: element.parentElement.clientWidth, // * 0.8,
+						height: element.parentElement.clientHeight, // * 0.8,
 					}).toString();
 			}
 			document.addEventListener("DOMContentLoaded", () => {
