@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
 	<head>
+    <script type="module" src="node_modules/firebase/analytics/dist/esm/index.esm.js"></script>
 		<script src="node_modules/gridstack/dist/gridstack-all.js"></script>
 		<link
 			href="node_modules/gridstack/dist/gridstack.min.css"
@@ -29,7 +30,7 @@
 		<div class="grid-stack"></div>
 		<script src="lib.js"></script>
 		<script type="text/javascript">
-			var grid = GridStack.init();
+			var grid = GridStack.init({float: true});
 			grid.load(localStorage.getItem("layout") || []);
 			const api = "https://um-api.dreamnity.in";
 			const token = "MWhqcmIzMnVsLmQ0Zw";
