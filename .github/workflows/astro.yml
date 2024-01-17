@@ -64,7 +64,7 @@ jobs:
         run: ${{ steps.detect-package-manager.outputs.manager }} ${{ steps.detect-package-manager.outputs.command }}
         working-directory: ${{ env.BUILD_PATH }}
       - name: Build
-        run: npm run buildidx;npm run buildgrph
+        run: npm run buildidx;npm run builddash;npm run buildgrph
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
