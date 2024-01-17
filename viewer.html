@@ -97,6 +97,7 @@
 							setTimeout(() => reco("Reconnecting..."), 2000);
 						}
 					}, 2000);
+          setInterval(()=>ws.send(''),30000);
 					window.ws = ws;
 					window.reco = reco;
 					onopen = ws.onopen = async () => {
