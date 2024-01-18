@@ -26,108 +26,65 @@
 		<title>UniMetrics</title>
 	</head>
 	<body>
-		<script type="module">
-			import {
-				getAuth,
-				GoogleAuthProvider,
-				signInWithPopup,
-			} from "firebase/auth";
-			import { initializeApp } from "firebase/app";
-			const provider = new GoogleAuthProvider();
-			const firebaseConfig = {
-				apiKey: "AIzaSyBB6soKBXBBOAMYwWQq2ldkERkKKS_-uNA",
-				authDomain: "dreamnity-unimetrics.firebaseapp.com",
-				databaseURL:
-					"https://dreamnity-unimetrics-default-rtdb.asia-southeast1.firebasedatabase.app",
-				projectId: "dreamnity-unimetrics",
-				storageBucket: "dreamnity-unimetrics.appspot.com",
-				messagingSenderId: "701986868815",
-				appId: "1:701986868815:web:657e378b58bf01fcaae43a",
-				measurementId: "G-XLS949FTQQ",
-			};
-			const app = initializeApp(firebaseConfig);
-			const auth = getAuth(app);
-			const login = ()=>signInWithPopup(auth, provider)
-				.then(result => {
-					/*// This gives you a Google Access Token. You can use it to access the Google API.
-					const credential = GoogleAuthProvider.credentialFromResult(result);
-					const token = credential.accessToken;
-					// The signed-in user info.
-					const user = result.user;
-					// IdP data available using getAdditionalUserInfo(result)
-					// ...*/
-          return result?.user?.uid;
-				})
-				.catch(error => {
-					// Handle Errors here.
-					const errorCode = error.code;
-					const errorMessage = error.message;
-					// The email of the user's account used.
-					const email = error.customData.email;
-					// The AuthCredential type that was used.
-					const credential = GoogleAuthProvider.credentialFromError(error);
-					// ...
-				});
-			window.firebase = {
-				auth: getAuth(app),
-				app,
-        login
-			};
-		</script>
+		<script type="module" src="firebase.js"></script>
 		<div class="grid-stack"></div>
-    <a href="javascript:firebase.login()">Login</a>
+		<a href="javascript:firebase.login()" id="login" hidden>Login</a>
 		<script src="lib.js"></script>
-		<script type="text/javascript">
+		<script type="text/javascript" defer>
 			var grid = GridStack.init({ float: true });
 			grid.load(localStorage.getItem("layout") || []);
 			const api = "https://um-api.dreamnity.in";
-			const token = "MWhqcmIzMnVsLmQ0Zw";
 			document.addEventListener("DOMContentLoaded", () => {
 				for (const element of document.getElementsByClassName("viewer")) {
 					configureFrame(element);
 				}
 			});
-			fetch(api + "/variable/list?" + new URLSearchParams({ token }).toString())
-				.then(e => e.text())
-				.then(e => {
-					e.split(",")
-						.filter(e => !e.includes("author"))
-						.forEach(e => createItem(e, token));
-				});
-			grid.on(
-				"resizestop",
-				/**
-				 * @param {Event} event
-				 * @param {Element} el
-				 */
-				function (event, el) {
-					const frame = [
-						...[...el.childNodes.values()]
-							.find(e => e.className === "grid-stack-item-content")
-							.childNodes.values(),
-					].find(e => e.className === "viewer");
-					console.log(frame);
-					frame.clientHeight = el.clientHeight - 28;
-					frame.clientWidth = el.clientWidth - 28;
-					configureFrame(frame);
+			firebase.getToken().then(token => {
+        if(!token) return document.getElementById('login').hidden = false;
+				fetch(
+					api + "/variable/list?" + new URLSearchParams({ token }).toString()
+				)
+					.then(e => e.text())
+					.then(e => {
+						e.split(",")
+							.filter(e => !e.includes("author"))
+							.forEach(e => createItem(e, token));
+					});
+				grid.on(
+					"resizestop",
+					/**
+					 * @param {Event} event
+					 * @param {Element} el
+					 */
+					function (event, el) {
+						const frame = [
+							...[...el.childNodes.values()]
+								.find(e => e.className === "grid-stack-item-content")
+								.childNodes.values(),
+						].find(e => e.className === "viewer");
+						console.log(frame);
+						frame.clientHeight = el.clientHeight - 28;
+						frame.clientWidth = el.clientWidth - 28;
+						configureFrame(frame);
+						saveData(el, token);
+					}
+				);
+				grid.on("dragstop", (event, el) => {
 					saveData(el, token);
-				}
-			);
-			grid.on("dragstop", (event, el) => {
-				saveData(el, token);
+				});
+				//grid.on('added',(event,el)=>console.log(el[0].el.childNodes[1].childNodes[1]));
+				grid.on(
+					"added",
+					/**
+					 * @param {Event} event
+					 * @param {{el:Element}[]} el
+					 */
+					async (event, el) => {
+						const div = el[0].el.childNodes[1].childNodes[1];
+						return setTimeout(() => configureFrame(div), 500);
+					}
+				);
 			});
-			//grid.on('added',(event,el)=>console.log(el[0].el.childNodes[1].childNodes[1]));
-			grid.on(
-				"added",
-				/**
-				 * @param {Event} event
-				 * @param {{el:Element}[]} el
-				 */
-				async (event, el) => {
-					const div = el[0].el.childNodes[1].childNodes[1];
-					return setTimeout(() => configureFrame(div), 500);
-				}
-			);
 		</script>
 	</body>
 </html>
